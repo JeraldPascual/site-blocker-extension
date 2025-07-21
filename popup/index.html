@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Site Blocker</title>
+    <style>
+      @font-face {
+        font-family: "Chillax-Variable";
+        src: url("/fonts/Chillax-Variable.ttf") format("opentype");
+      }
+      
+
+      body {
+        font-family: sans-serif;
+        padding: 10px;
+        width: 270px;
+        background: #008cff; /* Bright blue */
+      }
+
+      h1 {
+
+        margin-bottom: 10px;
+        text-align: center;
+        font-family: "Chillax-Variable", sans-serif;
+        font-size: 30px;
+        font-weight: 600;
+      }
+
+      h3 {
+        margin: 5px 0 0 0;
+        font-family: "Chillax-Variable", sans-serif;
+        font-size: 20px;
+        font-weight: 500;
+      }
+
+      input,
+      button {
+        width: 90%;
+        margin-top: 10px;
+        padding: 5px;
+        border-radius: 5px;
+        border: 2px solid black;
+        box-shadow: 4px 4px 0px black;
+        outline: none;
+      }
+
+      input#siteInput {
+        width: 50%;
+      }
+
+      select {
+        width: 40%;
+        margin-left: 5px;
+        border-radius: 5px;
+      }
+
+      ul {
+        padding-left: 20px;
+      }
+
+      li {
+        font-size: 14px;
+      }
+
+      .remove {
+        color: red;
+        cursor: pointer;
+        float: right;
+      }
+      
+    </style>
+  </head>
+  <body>
+    <h1>Site Blocker</h1>
+    <input id="siteInput" placeholder="example.com" />
+    <select id="modeSelect">
+      <option value="permanent">Permanent</option>
+      <option value="timer">Timer</option>
+    </select>
+    <h3>Timer:</h3>
+    <input id="minutesInput" type="number" placeholder="Minutes" />
+    <input id="secondsInput" type="number" placeholder="Seconds" />
+    <button id="blockButton">Block Site</button>
+    <ul id="siteList"></ul>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
