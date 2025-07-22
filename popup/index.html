@@ -8,7 +8,6 @@
         font-family: "Chillax-Variable";
         src: url("/fonts/Chillax-Variable.ttf") format("opentype");
       }
-      
 
       body {
         font-family: sans-serif;
@@ -18,7 +17,6 @@
       }
 
       h1 {
-
         margin-bottom: 10px;
         text-align: center;
         font-family: "Chillax-Variable", sans-serif;
@@ -67,7 +65,31 @@
         cursor: pointer;
         float: right;
       }
-      
+
+      #scrollableList {
+  max-height: 200px; /* Adjust based on your popup height */
+  overflow-y: auto;
+  background-color: white;
+  border: 2px solid black;
+  border-radius: 5px;
+  padding: 5px;
+  margin-top: 10px;
+  box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2);
+}
+
+#siteList {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+#siteList li {
+  margin-bottom: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
     </style>
   </head>
   <body>
@@ -81,7 +103,9 @@
     <input id="minutesInput" type="number" placeholder="Minutes" />
     <input id="secondsInput" type="number" placeholder="Seconds" />
     <button id="blockButton">Block Site</button>
-    <ul id="siteList"></ul>
+    <div id="scrollableList">
+      <ul id="siteList"></ul>
+    </div>
 
     <script src="popup.js"></script>
   </body>
