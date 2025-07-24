@@ -35,7 +35,17 @@ function loadBlockedSites() {
       removeBtn.style.marginLeft = "10px";
       removeBtn.onclick = () => {
         blocked.splice(index, 1);
-        chrome.storage.sync.set({ blocked }, loadBlockedSites);
+        chrome.storage.sync.set({ blocked }, () => {
+          loadBlockedSites();
+      
+         // ✅ Added reload after removal
+         // This ensures automatic page reload when a site is unblocked
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            if (tabs[0]?.id) {
+              chrome.tabs.reload(tabs[0].id);
+            }
+          });
+        });
       };
 
       li.appendChild(removeBtn);
@@ -46,7 +56,10 @@ function loadBlockedSites() {
 
 function addSite() {
   const rawSite = input.value.trim();
-  const site = rawSite.replace(/^https?:\/\//, "").replace(/^www\./, "").split("/")[0];
+  const site = rawSite
+    .replace(/^https?:\/\//, "")
+    .replace(/^www\./, "")
+    .split("/")[0];
   const mode = modeSelect.value;
   const mins = parseInt(minutesInput.value) || 0;
   const secs = parseInt(secondsInput.value) || 0;
@@ -56,7 +69,10 @@ function addSite() {
     return;
   }
 
-  if (mode === "timer" && (mins < 0 || secs < 0 || (mins === 0 && secs === 0))) {
+  if (
+    mode === "timer" &&
+    (mins < 0 || secs < 0 || (mins === 0 && secs === 0))
+  ) {
     alert("Timer must be greater than 0 seconds.");
     return;
   }
@@ -64,15 +80,17 @@ function addSite() {
   const newEntry = {
     site,
     mode,
-    durationMs: mode === "timer" ? ((mins * 60 + secs) * 1000) : null,
-    addedAt: Date.now()
+    durationMs: mode === "timer" ? (mins * 60 + secs) * 1000 : null,
+    addedAt: Date.now(),
   };
 
   chrome.storage.sync.get(["blocked"], (data) => {
     const existing = data.blocked || [];
 
     // Optional: Prevent duplicates
-    const alreadyExists = existing.some(e => e.site === site && e.mode === mode);
+    const alreadyExists = existing.some(
+      (e) => e.site === site && e.mode === mode
+    );
     if (alreadyExists) {
       alert("This site is already blocked.");
       return;
@@ -88,7 +106,7 @@ function addSite() {
         if (tab?.id) {
           chrome.scripting.executeScript({
             target: { tabId: tab.id },
-            files: ["content.js"]
+            files: ["content.js"],
           });
         }
       });

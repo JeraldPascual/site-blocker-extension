@@ -4,13 +4,13 @@
 (async () => {
   const [{ blocked }, { blockConfig }] = await Promise.all([
     chrome.storage.sync.get("blocked"),
-    chrome.storage.sync.get("blockConfig")
+    chrome.storage.sync.get("blockConfig"),
   ]);
 
   const domain = location.hostname.replace(/^www\./, "");
   const now = Date.now();
 
-  const matchedEntry = (blocked || []).find(entry => {
+  const matchedEntry = (blocked || []).find((entry) => {
     if (!domain.includes(entry.site)) return false;
 
     if (entry.mode === "permanent") return true;
@@ -56,8 +56,7 @@
 
   overlay.appendChild(msg);
   overlay.appendChild(timer);
-  document.body.appendChild(overlay); 
-
+  document.body.appendChild(overlay);
 
   // Handle countdown
   if (matchedEntry.mode === "timer") {
@@ -74,9 +73,10 @@
         // ✅ Delete from blocked list
         chrome.storage.sync.get(["blocked"], (data) => {
           const sites = data.blocked || [];
-          const updated = sites.filter(e => e.site !== matchedEntry.site);
+          const updated = sites.filter((e) => e.site !== matchedEntry.site);
           chrome.storage.sync.set({ blocked: updated });
         });
+        
       } else {
         const mins = Math.floor(remaining / 60000);
         const secs = Math.floor((remaining % 60000) / 1000);
