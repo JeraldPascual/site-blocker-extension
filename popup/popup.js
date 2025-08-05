@@ -5,6 +5,28 @@ const modeSelect = document.getElementById("modeSelect");
 const blockButton = document.getElementById("blockButton");
 const siteList = document.getElementById("siteList");
 
+const toggleBtn = document.createElement("button");
+toggleBtn.textContent = "Show Site Names";
+toggleBtn.style.marginBottom = "10px";
+let showNames = false;
+
+toggleBtn.onclick = () => {
+  if (!showNames) {
+    if (confirm("Are you sure you want to reveal the blocked site names?")) {
+      showNames = true;
+      toggleBtn.textContent = "Hide Site Names";
+      loadBlockedSites();
+    }
+  } else {
+    showNames = false;
+    toggleBtn.textContent = "Show Site Names";
+    loadBlockedSites();
+  }
+};
+
+// Insert the toggle button above the site list
+siteList.parentNode.insertBefore(toggleBtn, siteList);
+
 function loadBlockedSites() {
   chrome.storage.sync.get(["blocked"], (data) => {
     const blocked = data.blocked || [];
@@ -12,10 +34,11 @@ function loadBlockedSites() {
 
     blocked.forEach((entry, index) => {
       const li = document.createElement("li");
-      const domain = entry.site;
       const mode = entry.mode;
 
-      let info = `${domain} — ${mode}`;
+      // Show or mask the domain
+      const displayDomain = showNames ? entry.site : "•••••";
+      let info = `${displayDomain} — ${mode}`;
       if (mode === "timer") {
         const now = Date.now();
         const remaining = entry.durationMs - (now - entry.addedAt);
@@ -34,18 +57,19 @@ function loadBlockedSites() {
       removeBtn.textContent = "❌";
       removeBtn.style.marginLeft = "10px";
       removeBtn.onclick = () => {
-        blocked.splice(index, 1);
-        chrome.storage.sync.set({ blocked }, () => {
-          loadBlockedSites();
-      
-         // ✅ Added reload after removal
-         // This ensures automatic page reload when a site is unblocked
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-            if (tabs[0]?.id) {
-              chrome.tabs.reload(tabs[0].id);
-            }
+        if (confirm("Are you sure you want to remove this site from the block list?")) {
+          blocked.splice(index, 1);
+          chrome.storage.sync.set({ blocked }, () => {
+            loadBlockedSites();
+
+            // ✅ Reload after removal
+            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+              if (tabs[0]?.id) {
+                chrome.tabs.reload(tabs[0].id);
+              }
+            });
           });
-        });
+        }
       };
 
       li.appendChild(removeBtn);
